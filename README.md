@@ -37,6 +37,8 @@ on:
 jobs:
   build:
     uses: LiRenTech/turbo-tauri/.github/workflows/turbo-tauri.yml@master
+    permissions:
+      contents: write # To create releases
     with:
       # See below
       android_key_path:
