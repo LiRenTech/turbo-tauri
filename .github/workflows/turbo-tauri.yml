@@ -185,8 +185,7 @@ jobs:
           - platform: "ubuntu-22.04"
             rust_targets: "armv7-linux-androideabi,i686-linux-android,x86_64-linux-android,aarch64-linux-android"
             android: true
-            dist_dir:
-              - "src-tauri/gen/android/app/build/outputs/apk/universal/release"
+            dist_dir: "src-tauri/gen/android/app/build/outputs/apk/universal/release"
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -280,7 +279,9 @@ jobs:
       - name: Windows - Build
         if: matrix.platform == 'windows-latest'
         run: |
-          $envs = @"${{ secrets.BUILD_ENV }}"@
+          $envs = @"
+          ${{ secrets.BUILD_ENV }}
+          "@
           $envs -split "`n" | ForEach-Object {
               $key, $value = $_ -split '=', 2
               if ($key -and $value) {
@@ -296,6 +297,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
+      - name: MacOS - Remove unnessary files
+        if: matrix.platform == 'macos-latest'
+        run: |
+          rm -rf ${{ matrix.dist_dir }}/*.{sh,icns}
       - name: Upload
         run: |
           gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/* --clobber
