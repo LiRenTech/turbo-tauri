@@ -36,13 +36,34 @@ on:
       - master
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: LiRenTech/turbo-tauri/.github/workflows/turbo-tauri.yml@master
-        with:
-          # Workflow parameters go here
-        secrets:
-          # Secrets go here
+    uses: LiRenTech/turbo-tauri/.github/workflows/turbo-tauri.yml@master
+    with:
+      # See below
+      android_key_path:
+      app_root:
+      app_version:
+      app_version_android:
+      aur_key_algorithm:
+      aur_package_name:
+      delete_release:
+      prerelease:
+      release_name:
+      release_notes:
+      release_tag:
+      task_build:
+      task_build_android:
+      turbo_team:
+    secrets:
+      # See below
+      ANDROID_KEY_ALIAS:
+      ANDROID_KEYSTORE:
+      ANDROID_KEYSTORE_PASSWORD:
+      AUR_SSH_PRIVATE_KEY:
+      BUILD_ENV:
+      GITHUB_TOKEN:
+      TAURI_SIGNING_PRIVATE_KEY:
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD:
+      TURBO_TOKEN:
 ```
 
 ## Workflow Parameters

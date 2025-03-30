@@ -72,6 +72,11 @@ on:
         description: The task to run for building the app for Android.
         required: false
         default: "tauri:build:android"
+      android_key_alias:
+        type: string
+        description: The alias of the Android key.
+        required: false
+        default: "upload"
     secrets:
       GITHUB_TOKEN:
         description: Authenticate GitHub to publish releases.
@@ -93,9 +98,6 @@ on:
         required: false
       ANDROID_KEYSTORE_PASSWORD:
         description: Password for the keystore.
-        required: false
-      ANDROID_KEY_ALIAS:
-        description: Alias for the key.
         required: false
       BUILD_ENV:
         description: "Environment variables to pass to `tauri build`. Format: `key1=value1\\nkey2=value2\\n...`."
@@ -129,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ inputs.turbo-team }}
+      TURBO_TEAM: ${{ inputs.turbo_team }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -232,7 +234,7 @@ jobs:
           cd ${{ inputs.app_root }}/src-tauri/gen/android
           cat > keystore.properties <<EOF
           password=${{ secrets.ANDROID_RELEASE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_RELEASE_ALIAS }}
+          keyAlias=${{ inputs.android_key_alias }}
           storeFile=${{ inputs.android_key_path }}
           EOF
           echo "${{ secrets.ANDROID_RELEASE_KEYSTORE }}" | base64 --decode > ${{ inputs.app_root }}/${{ inputs.android_key_path }}
@@ -310,7 +312,7 @@ jobs:
           # RFC 3339 format
           echo "  \"pub_date\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"," >> latest.json
           echo '  "platforms": {' >> latest.json
-          echo '  "linux-x86_64": {' >> latest.json
+          echo '  "windows-x86_64": {' >> latest.json
           echo "    \"signature\": \"${signature}\"," >> latest.json
           echo "    \"url\": \"${url}\""" >> latest.json
           echo '  }' >> latest.json
