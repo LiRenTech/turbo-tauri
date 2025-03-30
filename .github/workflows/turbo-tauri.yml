@@ -262,7 +262,8 @@ jobs:
           sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ inputs.app_version_android }}\"/" ${{ inputs.app_root }}/src-tauri/tauri.conf.json
       #endregion
       #region Build
-      - name: Build
+      - name: "*nix - Build"
+        if: matrix.platform != 'windows-latest'
         run: |
           envs="${{ secrets.BUILD_ENV }}"
           envs_with_export=$(echo $envs | sed 's/^/export /')
@@ -276,10 +277,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      - name: Windows - Build
+        if: matrix.platform == 'windows-latest'
+        run: |
+          $envs = @"${{ secrets.BUILD_ENV }}"@
+          $envs -split "`n" | ForEach-Object {
+              $key, $value = $_ -split '=', 2
+              if ($key -and $value) {
+                  Set-Item -Path "env:$($key.Trim())" -Value $value.Trim()
+              }
+          }
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ inputs.turbo_team }}
+          TAURI_BUILD_ARGS: ${{ matrix.args }}
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       - name: Upload
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ join(matrix.dist_dir, ' ') }} --clobber
+          gh release upload ${{ inputs.release_tag }} ${{ matrix.dist_dir }}/* --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
