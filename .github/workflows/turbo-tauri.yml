@@ -118,7 +118,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Delete release
-        if: inputs.delete_release == 'true'
+        if: inputs.delete_release == true
         run: |
           gh release delete nightly --yes --cleanup-tag || true
           sleep 1
