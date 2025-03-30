@@ -303,7 +303,7 @@ jobs:
           rm -rf ${{ matrix.dist_dir }}/*.{sh,icns}
       - name: Upload
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/* --clobber
+          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/* --clobber || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
