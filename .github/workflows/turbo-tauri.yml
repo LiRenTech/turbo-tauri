@@ -78,9 +78,9 @@ on:
         required: false
         default: "upload"
     secrets:
-      GITHUB_TOKEN:
-        description: Authenticate GitHub to publish releases.
-        required: true
+      # GITHUB_TOKEN:
+      #   description: Authenticate GitHub to publish releases.
+      #   required: true
       TURBO_TOKEN:
         description: Authenticate Turbo to enable Remote Cache.
         required: false
@@ -109,6 +109,8 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -129,6 +131,8 @@ jobs:
 
   build-frontend:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ inputs.turbo_team }}
@@ -297,6 +301,8 @@ jobs:
   
   generate-updater-json:
     needs: [create-release, publish-tauri]
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

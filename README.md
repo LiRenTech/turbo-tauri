@@ -60,7 +60,6 @@ jobs:
       ANDROID_KEYSTORE_PASSWORD:
       AUR_SSH_PRIVATE_KEY:
       BUILD_ENV:
-      GITHUB_TOKEN:
       TAURI_SIGNING_PRIVATE_KEY:
       TAURI_SIGNING_PRIVATE_KEY_PASSWORD:
       TURBO_TOKEN:
@@ -89,7 +88,6 @@ jobs:
 
 | Secret                               | Description                                                                                | Required | Default |
 | ------------------------------------ | ------------------------------------------------------------------------------------------ | -------- | ------- |
-| `GITHUB_TOKEN`                       | GitHub token used to create releases.                                                      | Yes      | N/A     |
 | `TURBO_TOKEN`                        | Token used to enable Turbo remote caching.                                                 | No       | N/A     |
 | `TAURI_SIGNING_PRIVATE_KEY`          | Private key used to sign application binaries for updater support.                         | No       | N/A     |
 | `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for the signing key.                                                              | No       | N/A     |
