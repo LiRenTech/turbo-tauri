@@ -298,7 +298,7 @@ jobs:
 
       - name: Upload
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ matrix.dist_dir }}/* --clobber
+          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/* --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
