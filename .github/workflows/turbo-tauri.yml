@@ -170,7 +170,7 @@ jobs:
             dist_dir: "src-tauri/target/release/bundle/deb"
 
           - platform: "windows-latest"
-            dist_dir: "src-tauri/target/release/bundle/msi"
+            dist_dir: "src-tauri/target/release/bundle/nsis"
 
           - platform: "macos-latest"
             args: "--target aarch64-apple-darwin"
@@ -303,7 +303,7 @@ jobs:
           rm -rf ${{ matrix.dist_dir }}/*.{sh,icns}
       - name: Upload
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/* --clobber || true
+          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.* --clobber || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
