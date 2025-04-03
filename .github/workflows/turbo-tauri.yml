@@ -261,7 +261,7 @@ jobs:
           sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ inputs.app_version_android }}\"/" ${{ inputs.app_root }}/src-tauri/tauri.conf.json
       #endregion
       #region Build
-      - name: "*nix - Build"
+      - name: Linux Macos - Build
         if: matrix.platform != 'windows-latest'
         run: |
           envs="${{ secrets.BUILD_ENV }}"
@@ -301,9 +301,17 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           rm -rf ${{ matrix.dist_dir }}/*.{sh,icns}
-      - name: Upload
+      - name: Linux Macos - Upload
+        if: matrix.platform != 'windows-latest'
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.* --clobber || true
+          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.* --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Windows - Upload
+        if: matrix.platform == 'windows-latest'
+        run: |
+          cd ${{ inputs.app_root }}/${{ matrix.dist_dir }}
+          gh release upload ${{ inputs.release_tag }} (Get-Item .\*.*).FullName --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
