@@ -318,6 +318,7 @@ jobs:
         run: |
           cd ${{ inputs.app_root }}/${{ matrix.dist_dir }}
           gh release upload ${{ inputs.release_tag }} (Get-Item .\*.${{ matrix.dist_ext }}).FullName --clobber
+          gh release upload ${{ inputs.release_tag }} (Get-Item .\*.sig).FullName --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
