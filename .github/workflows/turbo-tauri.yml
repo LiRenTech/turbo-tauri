@@ -355,7 +355,7 @@ jobs:
           url=$(gh release view ${{ inputs.release_tag }} --json assets -q '.assets.[] | .url | select(endswith(".exe"))')
           echo '{' > latest.json
           echo '  "version": "${{ inputs.app_version }}",' >> latest.json
-          echo '  "notes": "${{ inputs.release_notes }}",' >> latest.json'
+          echo '  "notes": "$changelog",' >> latest.json'
           # RFC 3339 format
           echo "  \"pub_date\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"," >> latest.json
           echo '  "platforms": {' >> latest.json
@@ -386,8 +386,8 @@ jobs:
           cd aurpackage
           sed -i "s/pkgver=.*$/pkgver=r${{ github.run_number }}/" PKGBUILD
           sed -i "s/pkgver = .*$/pkgver = r${{ github.run_number }}/" .SRCINFO
-          sed -i "s/source_x86_64=('.*')/source_x86_64=('https://github.com/${{ github.repository }}/releases/download/${{ inputs.release_tag }}/${{ needs.publish-tauri.outputs.deb_filename }}')/" PKGBUILD
-          sed -i "s/source_x86_64 = .*$/source_x86_64 = https://github.com/${{ github.repository }}/releases/download/${{ inputs.release_tag }}/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
+          sed -i "s/source_x86_64=('.*')/source_x86_64=('https:\/\/github.com\/${{ github.repository }}\/releases\/download/\${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}')/" PKGBUILD
+          sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/${{ github.repository }}\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
           sed -i "s/^sha256sums_x86_64=('.*')$/sha256sums_x86_64=('${{ needs.publish-tauri.outputs.hash }}')/" PKGBUILD
           sed -i "s/sha256sums_x86_64 = .*$/sha256sums_x86_64 = ${{ needs.publish-tauri.outputs.hash }}/" .SRCINFO
       - name: Commit and push changes
