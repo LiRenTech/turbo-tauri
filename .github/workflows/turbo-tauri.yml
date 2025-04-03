@@ -288,6 +288,7 @@ jobs:
                   Set-Item -Path "env:$($key.Trim())" -Value $value.Trim()
               }
           }
+          pnpm turbo run ${{ inputs.task_build }}
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ inputs.turbo_team }}
@@ -300,7 +301,7 @@ jobs:
       - name: MacOS - Remove unnessary files
         if: matrix.platform == 'macos-latest'
         run: |
-          rm -rf ${{ matrix.dist_dir }}/*.{sh,icns}
+          rm -rf ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.{sh,icns} || true
       - name: Linux Macos - Upload
         if: matrix.platform != 'windows-latest'
         run: |
