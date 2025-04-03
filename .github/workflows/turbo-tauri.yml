@@ -182,10 +182,10 @@ jobs:
             rust_targets: "x86_64-apple-darwin"
             dist_dir: "src-tauri/target/x86_64-apple-darwin/release/bundle/dmg"
 
-          - platform: "ubuntu-22.04"
-            rust_targets: "armv7-linux-androideabi,i686-linux-android,x86_64-linux-android,aarch64-linux-android"
-            android: true
-            dist_dir: "src-tauri/gen/android/app/build/outputs/apk/universal/release"
+          # - platform: "ubuntu-22.04"
+          #   rust_targets: "armv7-linux-androideabi,i686-linux-android,x86_64-linux-android,aarch64-linux-android"
+          #   android: true
+          #   dist_dir: "src-tauri/gen/android/app/build/outputs/apk/universal/release"
 
     runs-on: ${{ matrix.platform }}
     steps:
