@@ -168,19 +168,23 @@ jobs:
 
           - platform: "ubuntu-22.04"
             dist_dir: "src-tauri/target/release/bundle/deb"
+            dist_ext: "deb"
 
           - platform: "windows-latest"
             dist_dir: "src-tauri/target/release/bundle/nsis"
+            dist_ext: "exe"
 
           - platform: "macos-latest"
             args: "--target aarch64-apple-darwin"
             rust_targets: "aarch64-apple-darwin"
             dist_dir: "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg"
+            dist_ext: "dmg"
 
           - platform: "macos-latest"
             args: "--target x86_64-apple-darwin"
             rust_targets: "x86_64-apple-darwin"
             dist_dir: "src-tauri/target/x86_64-apple-darwin/release/bundle/dmg"
+            dist_ext: "dmg"
 
           # - platform: "ubuntu-22.04"
           #   rust_targets: "armv7-linux-androideabi,i686-linux-android,x86_64-linux-android,aarch64-linux-android"
@@ -198,6 +202,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libudev-dev
       - uses: pnpm/action-setup@v4
+        id: pnpm
         name: Install pnpm
         with:
           run_install: false
@@ -305,14 +310,14 @@ jobs:
       - name: Linux Macos - Upload
         if: matrix.platform != 'windows-latest'
         run: |
-          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.* --clobber
+          gh release upload ${{ inputs.release_tag }} ${{ inputs.app_root }}/${{ matrix.dist_dir }}/*.${{ matrix.dist_ext }} --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Windows - Upload
         if: matrix.platform == 'windows-latest'
         run: |
           cd ${{ inputs.app_root }}/${{ matrix.dist_dir }}
-          gh release upload ${{ inputs.release_tag }} (Get-Item .\*.*).FullName --clobber
+          gh release upload ${{ inputs.release_tag }} (Get-Item .\*.${{ matrix.dist_ext }}).FullName --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -331,7 +336,7 @@ jobs:
           cd ${{ inputs.app_root }}/src-tauri/target/release/bundle/deb
           echo "filename=$(ls *.deb)" >> "$GITHUB_OUTPUT"
       #endregion
-  
+
   generate-updater-json:
     needs: [create-release, publish-tauri]
     permissions:
