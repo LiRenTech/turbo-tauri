@@ -361,7 +361,7 @@ jobs:
           echo '  "platforms": {' >> latest.json
           echo '  "windows-x86_64": {' >> latest.json
           echo "    \"signature\": \"${signature}\"," >> latest.json
-          echo "    \"url\": \"${url}\""" >> latest.json
+          echo "    \"url\": \"${url}\"" >> latest.json
           echo '  }' >> latest.json
           echo '}' >> latest.json
           cat latest.json
@@ -383,11 +383,13 @@ jobs:
         run: git clone ssh://aur@aur.archlinux.org/${{ inputs.aur_package_name }}.git ./aurpackage
       - name: Update version in PKGBUILD and .SRCINFO
         run: |
+          repo="${{ github.repository }}"
+          repo=$(echo $repo | sed 's/\//\\\//g')
           cd aurpackage
           sed -i "s/pkgver=.*$/pkgver=r${{ github.run_number }}/" PKGBUILD
           sed -i "s/pkgver = .*$/pkgver = r${{ github.run_number }}/" .SRCINFO
-          sed -i "s/source_x86_64=('.*')/source_x86_64=('https:\/\/github.com\/${{ github.repository }}\/releases\/download/\${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}')/" PKGBUILD
-          sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/${{ github.repository }}\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
+          sed -i "s/source_x86_64=('.*')/source_x86_64=('https:\/\/github.com\/$repo\/releases\/download/\${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}')/" PKGBUILD
+          sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
           sed -i "s/^sha256sums_x86_64=('.*')$/sha256sums_x86_64=('${{ needs.publish-tauri.outputs.hash }}')/" PKGBUILD
           sed -i "s/sha256sums_x86_64 = .*$/sha256sums_x86_64 = ${{ needs.publish-tauri.outputs.hash }}/" .SRCINFO
       - name: Commit and push changes
