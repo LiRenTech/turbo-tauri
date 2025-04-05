@@ -355,7 +355,7 @@ jobs:
           url=$(gh release view ${{ inputs.release_tag }} --json assets -q '.assets.[] | .url | select(endswith(".exe"))')
           echo '{' > latest.json
           echo '  "version": "${{ inputs.app_version }}",' >> latest.json
-          echo '  "notes": "$changelog",' >> latest.json
+          echo "  \"notes\": \"$changelog\"," >> latest.json
           # RFC 3339 format
           echo "  \"pub_date\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"," >> latest.json
           echo '  "platforms": {' >> latest.json
