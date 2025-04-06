@@ -123,10 +123,11 @@ jobs:
           gh release delete nightly --yes --cleanup-tag || true
           sleep 1
       - name: Create release
+        env:
+          tag: ${{ inputs.release_tag }}
+          name: ${{ inputs.release_name }}
+          notes: ${{ inputs.release_notes }}
         run: |
-          tag="${{ inputs.release_tag }}"
-          name="${{ inputs.release_name }}"
-          notes="${{ inputs.release_notes }}"
           gh release create "$tag" --title "$name" --notes "$notes" ${{ inputs.prerelease == true && '--prerelease' || '' }}
 
   build-frontend:
@@ -269,11 +270,11 @@ jobs:
       - name: Linux Macos - Build
         if: matrix.platform != 'windows-latest'
         run: |
-          envs="${{ secrets.BUILD_ENV }}"
           envs_with_export=$(echo $envs | sed 's/^/export /')
           eval $envs_with_export
           pnpm turbo run ${{ matrix.android && inputs.task_build_android || inputs.task_build }}
         env:
+          envs: ${{ secrets.BUILD_ENV }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ inputs.turbo_team }}
           TAURI_BUILD_ARGS: ${{ matrix.args }}
@@ -284,9 +285,6 @@ jobs:
       - name: Windows - Build
         if: matrix.platform == 'windows-latest'
         run: |
-          $envs = @"
-          ${{ secrets.BUILD_ENV }}
-          "@
           $envs -split "`n" | ForEach-Object {
               $key, $value = $_ -split '=', 2
               if ($key -and $value) {
@@ -295,6 +293,7 @@ jobs:
           }
           pnpm turbo run ${{ inputs.task_build }}
         env:
+          envs: ${{ secrets.BUILD_ENV }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ inputs.turbo_team }}
           TAURI_BUILD_ARGS: ${{ matrix.args }}
@@ -348,8 +347,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Generate latest.json
+        env:
+          changelog: ${{ inputs.release_notes }}
         run: |
-          changelog="${{ inputs.release_notes }}"
           changelog=$(echo "$changelog" | awk '{printf "%s\n", $0}' | sed 's/"/\\"/g')
           signature=$(gh release download ${{ inputs.release_tag }} -p "*.exe.sig" -O -)
           url=$(gh release view ${{ inputs.release_tag }} --json assets -q '.assets.[] | .url | select(endswith(".exe"))')
@@ -382,8 +382,9 @@ jobs:
       - name: Clone AUR repository
         run: git clone ssh://aur@aur.archlinux.org/${{ inputs.aur_package_name }}.git ./aurpackage
       - name: Update version in PKGBUILD and .SRCINFO
+        env:
+          repo: ${{ github.repository }}
         run: |
-          repo="${{ github.repository }}"
           repo=$(echo $repo | sed 's/\//\\\//g')
           echo $repo
           cd aurpackage
