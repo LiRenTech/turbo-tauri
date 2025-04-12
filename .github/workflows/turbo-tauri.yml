@@ -156,7 +156,6 @@ jobs:
     needs: [create-release, build-frontend]
     outputs:
       hash: ${{ steps.sha256sum.outputs.hash }}
-      deb_filename: ${{ steps.deb_filename.outputs.filename }}
     permissions:
       contents: write
     strategy:
@@ -330,14 +329,6 @@ jobs:
           cd ${{ inputs.app_root }}/src-tauri/target/release/bundle/deb
           sha256sum ./*.deb | awk '{print $1}' > sha256sum.txt
           echo "hash=$(cat sha256sum.txt)" >> "$GITHUB_OUTPUT"
-
-      - id: deb_filename
-        name: Linux - Get filename for AUR package
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          cd ${{ inputs.app_root }}/src-tauri/target/release/bundle/deb
-          ls *.deb
-          echo "filename=$(ls *.deb)" >> "$GITHUB_OUTPUT"
       #endregion
 
   generate-updater-json:
@@ -387,9 +378,12 @@ jobs:
       - name: Update version in PKGBUILD and .SRCINFO
         env:
           repo: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           repo=$(echo $repo | sed 's/\//\\\//g')
           echo $repo
+          deb_filename=$(gh release view ${{ inputs.release_tag }} --json assets -q '.assets.[].url | select(endswith(".deb"))')
+          echo $deb_filename
           cd aurpackage
           sed -i "s/pkgver=.*$/pkgver=${{ inputs.aur_version }}/" PKGBUILD
           sed -i "s/pkgver = .*$/pkgver = ${{ inputs.aur_version }}/" .SRCINFO
