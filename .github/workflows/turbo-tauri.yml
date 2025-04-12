@@ -156,7 +156,7 @@ jobs:
     needs: [create-release, build-frontend]
     outputs:
       hash: ${{ steps.sha256sum.outputs.hash }}
-      deb_filename: ${{ steps.deb_filename.outputs.deb_filename }}
+      deb_filename: ${{ steps.deb_filename.outputs.filename }}
     permissions:
       contents: write
     strategy:
@@ -336,6 +336,7 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           cd ${{ inputs.app_root }}/src-tauri/target/release/bundle/deb
+          ls *.deb
           echo "filename=$(ls *.deb)" >> "$GITHUB_OUTPUT"
       #endregion
 
@@ -396,6 +397,7 @@ jobs:
           sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
           sed -i "s/^sha256sums_x86_64=('.*')$/sha256sums_x86_64=('${{ needs.publish-tauri.outputs.hash }}')/" PKGBUILD
           sed -i "s/sha256sums_x86_64 = .*$/sha256sums_x86_64 = ${{ needs.publish-tauri.outputs.hash }}/" .SRCINFO
+          cat PKGBUILD .SRCINFO
       - name: Commit and push changes
         run: |
           cd aurpackage
