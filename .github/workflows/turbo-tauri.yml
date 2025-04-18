@@ -387,8 +387,8 @@ jobs:
           cd aurpackage
           sed -i "s/pkgver=.*$/pkgver=${{ inputs.aur_version }}/" PKGBUILD
           sed -i "s/pkgver = .*$/pkgver = ${{ inputs.aur_version }}/" .SRCINFO
-          sed -i "s/source_x86_64=('.*')/source_x86_64=('https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}')/" PKGBUILD
-          sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/${{ needs.publish-tauri.outputs.deb_filename }}/" .SRCINFO
+          sed -i "s/source_x86_64=('.*')/source_x86_64=('https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/$deb_filename')/" PKGBUILD
+          sed -i "s/source_x86_64 = .*$/source_x86_64 = https:\/\/github.com\/$repo\/releases\/download\/${{ inputs.release_tag }}\/$deb_filename/" .SRCINFO
           sed -i "s/^sha256sums_x86_64=('.*')$/sha256sums_x86_64=('${{ needs.publish-tauri.outputs.hash }}')/" PKGBUILD
           sed -i "s/sha256sums_x86_64 = .*$/sha256sums_x86_64 = ${{ needs.publish-tauri.outputs.hash }}/" .SRCINFO
           cat PKGBUILD .SRCINFO
